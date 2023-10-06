@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    var currentAction = ViewContext.RouteData.Values["action"] as string;
+    var currentController = ViewContext.RouteData.Values["controller"] as string;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swapper - @ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body class="@(currentAction == "Support" ? "support-bg-split" : "")">
+    <nav class="main-navbar">
+        <ul>
+            <li>
+                @Html.ActionLink("Swapper", "Index", "Home")
+            </li>
+            <li class="@(currentController == "Home" && currentAction == "About" ? "selected" : "")">
+                <a href="/Home/About">About</a>
+            </li>
+            <li class="@(currentController == "Home" && currentAction == "Support" ? "selected" : "")">
+                <a href="/Home/Support">Support</a>
+            </li>
+            @if (Request.IsAuthenticated)
+            {
+                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "row gap-2" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <li class="@(currentController == "Manage" ? "selected" : "")">
+                        @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Swaps", "Manage")
+                    </li>
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                }
+            }
+            else
+            {
+                <li>@Html.ActionLink("Login", "Login", "Account")</li>
+            }
+        </ul>
+    </nav>
+
+    <main class="@(currentAction == "Login" ? "bg-split" : "")">
+        @RenderBody()
+    </main>
+    <div class="screen-incompatible">
+        <div class="column">
+            <strong>Apologies</strong>
+            Swapper's features are optimized for screens with a width of 1440 pixels or more. <br />
+            Rest assured, we are actively working to improve the experience for smaller screens. <br /><br />
+            Thank you for your understanding.
+        </div>
+        <img src="~/Content/images/doodles/7.png" />
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

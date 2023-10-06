@@ -1,0 +1,148 @@
+﻿@model CollectionSwap.Models.EditCollectionModel
+@using Newtonsoft.Json;
+@{
+    List<string> items = JsonConvert.DeserializeObject<List<string>>(Model.Collection.ItemListJSON);
+    string statusMessage = ViewBag.Status;
+    string errorMessage = ViewBag.Error;
+    var sponsor = Model.Collection.Sponsor;
+}
+<div class="row">
+    <button class="scroll-row-button" onclick="ScrollRowBack(null)"><i class="fa fa-angle-left"></i></button>
+
+    <span class="header">
+        Edit Collection
+    </span>
+</div>
+
+<section>
+    <div class="collection-items-container">
+        <div class="collection-controls">
+            @using (Html.BeginForm("ChangeCollectionName", "Manage", null, FormMethod.Post, new { enctype = "multipart/form-data", role = "form", id = "update-name-form", @class = "edit-collection-form" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.Collection.Id)
+
+                    <label>Update Collection Name</label>
+                    @Html.TextBoxFor(model => model.Collection.Name)
+                    @Html.ValidationMessageFor(model => model.Collection.Name, "", new { @class = "text-danger" })
+                </div>
+                <input class="submit-button" type="submit" value="Update Name" />
+            }
+
+            @using (Html.BeginForm("AddItem", "Manage", null, FormMethod.Post, new { enctype = "multipart/form-data", role = "form", id = "add-item-form", @class = "edit-collection-form" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    @Html.HiddenFor(model => model.Collection.Id)
+                    @Html.HiddenFor(model => model.Collection.Name)
+
+                    @Html.LabelFor(model => model.FileInput)
+                    @Html.TextBoxFor(model => model.FileInput, null, new { type = "file", accept = ".png, .jpg", @class = "" })
+                    @Html.ValidationMessageFor(model => model.FileInput, "", new { @class = "text-danger" })
+                </div>
+                <input class="submit-button" type="submit" value="Upload" />
+            }
+        </div>
+
+        <div id="items">
+            <span class="header">Collection Items</span>
+            <div class="body">
+                @foreach (var item in items)
+                {
+                    var imagePath = $"~/Collections/{Model.Collection.Id}";
+                    var itemId = items.IndexOf(item) + 1;
+
+                    <div class="column align-items-center gap-1">
+                        @*@(item.Split('?')[0])*@
+                        <img class="item" src="@Url.Content(imagePath)/@item" />
+                        <div class="row gap-1">
+                            @using (Html.BeginForm("EditItem", "Manage", new { collectionId = Model.Collection.Id, itemId = @itemId - 1, fileName = @item }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <label for="fileInput@(itemId)"><span class="button-icon button-icon-upload"><i class="fa fa-upload"></i></span></label>
+                                <input class="d-none" type="file" id="fileInput@(itemId)" name="fileInput" accept=".png, .jpg">
+                            }
+                            @using (Html.BeginForm("DeleteItem", "Manage", new { collectionId = Model.Collection.Id, fileName = @item }, FormMethod.Post, new { role = "form", @class = "mt-3" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button class="button-icon button-icon-trash" type="submit" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa-solid fa-trash"></i></button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="user-collection-sponsor-container">
+            <div>
+                <div class="sponsor-logo admin">
+                    @using (Html.BeginForm("UploadSponsorImage", "Manage", null, FormMethod.Post, new { enctype = "multipart/form-data", id = "edit-sponsor-form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", Model.Collection.Id)
+                        <label class="admin @(sponsor != null && sponsor.Image != null ? "" : "placeholder")" for="sponsor-image-upload">
+                            <img class="sponsor-image placeholder" src="@(sponsor != null && sponsor.Image != null ?  $"/Sponsors/{Model.Collection.Id}/{sponsor.Image}" : "/Content/images/scrollbar.png")" alt="Sponsor Logo" />
+                        </label>
+                        <input class="d-none" type="file" id="sponsor-image-upload" name="fileInput" accept=".png, .jpg">
+                    }
+                    <label class="admin" for="sponsor-image-upload">Click to Edit Image</label>
+                    <hr />
+                    @if (sponsor != null && sponsor.Statement != null)
+                    {
+                        <div class="sponsor-statement admin" role="textbox" contenteditable>
+                            @Html.Raw(HttpUtility.HtmlDecode(sponsor.Statement))
+                        </div>
+                    }
+                    else
+                    {
+                <div class="sponsor-statement admin" role="textbox" contenteditable>
+                    <strong>Example Sponsor Statement:</strong><br />
+                    [Company Name] is proud to sponsor this unique collection of cards.<br /><br />
+                    Our commitment to this project is a reflection of our dedication to promoting [xyz].<br /><br />
+                    We are excited about the opportunity to support the creators behind these cards and their mission to celebrate [xyz].<br /><br />
+                    As we continue our association with this project, we are eager to contribute to a more emotionally aware world, much like we contribute to the growth and success of our business partners.<br /><br />
+                    Thank you for being a part of this journey with us.<br /><br />
+
+                    [Company Name]
+                </div>
+                    }
+                    <input type="hidden" name="statement" id="sponsor-statement">
+                </div>
+            </div>
+            <span class="row gap-1">
+                <button class="submit-button" onclick="EditSponsor(this)">Save</button>
+                <button class="submit-button clear" onclick="DeleteSponsor(this)">Delete</button>
+            </span>
+        </div>
+    }
+    else if (sponsor != null)
+    {
+        <div class="user-collection-sponsor-container">
+            <div>
+                <div class="sponsor-logo">
+                    <img src="@(sponsor.Image != null ? $"/Sponsors/{Model.Collection.Id}/{sponsor.Image}" : "/Content/images/doodles/3.png")" alt="Sponsor Logo" />
+                </div>
+                <hr />
+                @if (sponsor.Statement != null)
+                {
+                    <div class="sponsor-statement" role="textbox">
+                        @Html.Raw(System.Net.WebUtility.HtmlDecode(sponsor.Statement))
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</section>
+
+@if (Model.Collection.Id == 1 || Model.Collection.Id == 2) { 
+    <footer class="disclaimer">
+        The images in this collection are used under the terms of the Canva Free Media License Agreement. <br />
+        <a href="https://www.canva.com">Canva</a> is a platform that offers a wide range of design resources, including free images for creative projects. <br /> <br />
+
+        We would like to express our gratitude to Canva and its contributors for providing these resources to the design community.
+    </footer>
+}

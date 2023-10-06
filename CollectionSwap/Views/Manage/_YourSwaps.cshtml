@@ -1,0 +1,137 @@
+﻿@model CollectionSwap.Models.YourSwapsViewModel
+@using CollectionSwap.Models;
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+    var displayableSwaps = Model.Swaps;
+    var filter = ViewBag.Filter;
+    string statusMessage = ViewBag.Status;
+    string errorMessage = ViewBag.Error;
+}
+
+<div class="scroll-snap-row">
+    <div class="status-container">
+        @if (!String.IsNullOrEmpty(statusMessage))
+        {
+            <div class="status-message">@statusMessage</div>
+        }
+        else if (!String.IsNullOrEmpty(errorMessage))
+        {
+            <div class="status-message error">@errorMessage</div>
+        }
+    </div>
+    <div class="page-navigation">
+        <span class="header d-none"></span>
+    </div>
+    <div data-nav="Your Swaps" id="history-container">
+        <span class="header">Your Swaps</span>
+        <div class="swap-history-filters">
+            <span data-status="all" class="@(filter == "all" ? "selected" : "")">All</span>
+            <span data-status="requested" class="@(filter == "requested" ? "selected" : "")">Requested</span>
+            <span data-status="accepted" class="@(filter == "accepted" ? "selected" : "")">Accepted</span>
+            <span data-status="confirmed" class="@(filter == "confirmed" ? "selected" : "")">Confirmed</span>
+            <span data-status="completed" class="@(filter == "completed" ? "selected" : "")">Completed</span>
+        </div>
+        @if (displayableSwaps.Any())
+        {
+            <div class="status-key">
+                <span class="status-blue"><i class="fa-solid fa-circle"></i>- Waiting for other user</span>
+                <span class="status-orange"><i class="fa-solid fa-circle"></i>- Requires action from you</span>
+                <span class="status-green"><i class="fa-solid fa-circle"></i>- Swap complete</span>
+                <span class="status-red"><i class="fa-solid fa-circle"></i>- Swap canceled/declined</span>
+            </div>
+        }
+        <table>
+            <thead>
+                <tr>
+                    <th>Collection Name</th>
+                    <th>User</th>
+                    <th>Swap Progress</th>
+                    <th class="tooltip">
+                        Sent <i class="fa-solid fa-circle-info"></i>
+                        @Html.Partial("_Tooltip", "your-swaps-sent")
+                    </th>
+                    <th class="tooltip">
+                        Received <i class="fa-solid fa-circle-info"></i>
+                        @Html.Partial("_Tooltip", "your-swaps-received")
+                    </th>
+                    <th>Start Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (!displayableSwaps.Any())
+                {
+                    <tr class="no-swaps">
+                        <td colspan="7" style="text-align: center">
+                            No swaps to display<br />
+                        </td>
+                    </tr>
+                }
+
+                @foreach (var swap in displayableSwaps)
+                {
+                    var otherUser = userId == swap.Sender.Id ? swap.Receiver : swap.Sender;
+                    var isCharity = swap.ReceiverRequestedItems == "[]";
+                    var hasSentItems = userId == swap.Sender.Id ? swap.SenderConfirmSent : swap.ReceiverConfirmSent;
+                    var hasReceivedItems = userId == swap.Sender.Id ? swap.SenderConfirmReceived : swap.ReceiverConfirmReceived;
+                    var statusColor = swap.StatusColor(userId);
+                    var swapStatusMessage = swap.StatusMessage(userId);
+                    <tr>
+                        @*Collection Name*@
+                        <td onclick="OpenOffer(@swap.Id)">@swap.Collection.Name</td>
+                        @*User*@
+                        <td><a class="load-content" data-nav="View Swap" href="/Manage/Member/@otherUser.UserName">@otherUser.UserName</a></td>
+                        @*Swap Progress*@
+                        <td onclick="OpenOffer(@swap.Id)" class="swap-status">@Html.Partial("_SwapProgress", swap)</td>
+                        @*Sent*@
+                        <td class="@(swap.Status == "requested" || swap.Status == "accepted" ? "tooltip" : null)">
+                            <input data-swap-id="@swap.Id" data-type="sent" class="swap-confirm" type="checkbox" checked="@hasSentItems" @Html.Raw(swap.Status == "canceled" || swap.Status == "declined" ? "disabled" : "") />
+                            @Html.Partial("_Prompt", new PromptViewModel
+                            {
+                                Title = "Confirm Items Sent",
+                                Body = $"<p>By pressing continue you confirm that you've sent {otherUser.UserName}'s item(s) in the mail. This action cannot be undone.</p>",
+                                Action = "ConfirmSentReceived(this)"
+                            })
+                            @if (swap.Status == "requested" || swap.Status == "accepted")
+                            {
+                                @Html.Partial("_Tooltip", "inactive-checkbox")
+                            }
+                        </td>
+                        @*Received*@
+                            <td class="@(swap.Status == "requested" || swap.Status == "accepted" ? "tooltip" : null)">
+                                <input data-swap-id="@swap.Id" data-type="received" class="swap-confirm" type="checkbox" checked="@(hasReceivedItems || isCharity)" @Html.Raw(isCharity || swap.Status == "canceled" || swap.Status == "declined" ? "disabled" : "") />
+                                @Html.Partial("_Prompt", new PromptViewModel
+                                {
+                                    Title = "Confirm Items Received",
+                                    Body = $"<p>By pressing continue you confirm that you've received your items from {otherUser.UserName}. This action cannot be undone.</p>",
+                                    Action = "ConfirmSentReceived(this)"
+                                })
+                                @if (swap.Status == "requested" || swap.Status == "accepted")
+                                {
+                                    @Html.Partial("_Tooltip", "inactive-checkbox")
+                                }
+                            </td>
+                            @*Start Date*@
+                            <td onclick="OpenOffer(@swap.Id)">@swap.StartDate.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                            @*Status*@
+                            <td onclick="OpenOffer(@swap.Id)"><span class="@Html.Raw($"status-{statusColor}")"><i class="fa-solid fa-circle"></i>@swapStatusMessage</span></td>
+                        </tr>
+                    }
+            </tbody>
+        </table>
+    </div>
+    <div data-nav="View Swap" id="offer-container" class="d-none">
+        @if (Model.Offer != null)
+        {
+            @Html.Partial("_Offer", Model.Offer)
+        }
+    </div>
+    <div data-nav="Member Profile" id="profile-container" class="d-none">
+        @if (ViewBag.ViewProfile == true)
+        {
+            @Html.Partial("_Profile")
+        }
+    </div>
+</div>

@@ -1,0 +1,44 @@
+﻿@model CollectionSwap.Models.AccountViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<main class="register-form-container" aria-labelledby="title">
+    <div class="register-form-container-left">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <h4>Register your account</h4>
+            <hr />
+            @*@Html.ValidationSummary("", new { @class = "text-danger" })*@
+            <div class="column">
+                @Html.LabelFor(m => m.RegisterViewModel.Username, new { @class = "col-form-label" })
+                @Html.TextBoxFor(m => m.RegisterViewModel.Username, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.RegisterViewModel.Username, "", new { @class = "text-danger" })
+            </div>
+            <div class="column">
+                @Html.LabelFor(m => m.RegisterViewModel.Email, new { @class = "col-form-label" })
+                @Html.TextBoxFor(m => m.RegisterViewModel.Email, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.RegisterViewModel.Email, "", new { @class = "text-danger" })
+            </div>
+            <div class="column">
+                @Html.LabelFor(m => m.RegisterViewModel.Password, new { @class = "col-form-label" })
+                @Html.PasswordFor(m => m.RegisterViewModel.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.RegisterViewModel.Password, "", new { @class = "text-danger" })
+            </div>
+            <div class="column">
+                @Html.LabelFor(m => m.RegisterViewModel.ConfirmPassword, new { @class = "col-form-label" })
+                @Html.PasswordFor(m => m.RegisterViewModel.ConfirmPassword, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.RegisterViewModel.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+            <div class="column">
+                <input type="submit" value="Register" class="btn btn-outline-dark" />
+            </div>
+        }
+    </div>
+
+</main>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

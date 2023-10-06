@@ -1,0 +1,21 @@
+﻿@model CollectionSwap.Models.Swap
+@using Microsoft.AspNet.Identity
+@{
+    var userId = User.Identity.GetUserId();
+    var statusColor = Model.StatusColor(userId);
+    var progIndex = Model.ProgressIndex(userId);
+    var status = Model.StatusForUser(userId) == "pseudo-completed" ? "completed" : progIndex == 3 ? "Items Sent" : Model.Status;
+    var progTooltip = Model.ProgressTooltip(userId, progIndex);
+}
+
+<div class="swap-prog-container @Html.Raw($"swap-prog-{progIndex}") @Html.Raw(statusColor)">
+    @for (int i = 0; i < 5; i++)
+    {
+        <div class="@(i == progIndex ? "capstone tooltip" : null) @(i > progIndex ? "disabled" : null)">
+            @if (i == progIndex) {
+                <p>@status</p>
+                @Html.Partial("_Tooltip", progTooltip)
+            }
+        </div>
+    }
+</div>

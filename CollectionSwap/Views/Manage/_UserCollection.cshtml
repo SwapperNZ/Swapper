@@ -1,0 +1,111 @@
+﻿@model CollectionSwap.Models.UserCollection
+@using Newtonsoft.Json;
+@{
+    List<string> items = JsonConvert.DeserializeObject<List<string>>(Model.Collection.ItemListJSON);
+    int[] userItems = JsonConvert.DeserializeObject<int[]>(Model.ItemCountJSON);
+    var sponsor = Model.Collection.Sponsor;
+}
+
+<div class="row">
+    <button class="scroll-row-button" onclick="ScrollRowBack(null)"><i class="fa fa-angle-left"></i></button>
+
+    <span class="header">
+        Edit Collection
+    </span>
+</div>
+
+<section>
+    <div class="collection-items-container">
+        <div class="collection-controls">
+            @using (Html.BeginForm("ChangeUserCollectionName", "Manage", null, FormMethod.Post))
+            {
+                <div class="form-group">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.UserId)
+
+                    @Html.Label("Update Collection Name")
+                    @Html.TextBoxFor(model => model.Name, new { @class = "" })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+                <input class="submit-button" type="submit" value="Update Name" />
+            }
+            <div class="charity">
+                <span>
+                    <strong class="tooltip below">Donate this collection to another user<i class="fa-solid fa-circle-info">@Html.Partial("_Tooltip", "donate-collection")</i></strong>
+                    <label class="switch">
+                        <input data-user-collection-id="@Model.Id" class="charity-checkbox" type="checkbox" checked="@Model.Charity" />
+                        <span class="slider round"></span>
+                    </label>
+                </span>
+
+                <span>
+                    Enabling this option will offer <strong>ALL</strong> of your items within this collection to other users as a donation.
+                </span>
+            </div>
+        </div>
+        <div id="collection-items">
+            <span class="header">Your Items</span>
+            <div class="body">
+                <div class="min-width-100">
+                    <strong>Keep your collection up to date</strong><br />
+                    After completing a swap, your collection will be automatically updated with your new items.<br /> For the best experience, update your collection manually whenever you acquire or part with items outside of Swapper.
+                </div>
+                @foreach (var item in items)
+                {
+                    var imagePath = $"~/Collections/{Model.Collection.Id}";
+                    var itemId = items.IndexOf(item);
+
+                    <div class="column align-items-center">
+                        <div class="item-container @(userItems[itemId] < 1 ? "item-not-owned" : "")">
+                            <img class="item" src="@Url.Content(imagePath)/@item" />
+                        </div>
+                        <div class="item-quantity column align-items-center">
+                            Quantity:
+                            @using (Html.BeginForm("UpdateItemCount", "Manage", null, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("index", itemId)
+                                @Html.Hidden("userId", Model.UserId)
+                                @Html.Hidden("ucId", Model.Id)
+
+                                <div class="row align-items-center">
+                                    <button class="counter counter-minus" type="submit"><i class="fa fa-minus-circle"></i></button>
+                                    <input type="number" id="@itemId" name="quantity" min="0" max="99" value="@userItems[itemId]" />
+                                    <button class="counter counter-add" type="submit"><i class="fa fa-plus-circle"></i></button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @if (sponsor != null)
+    {
+        <div class="user-collection-sponsor-container">
+            <div>
+                <div class="sponsor-logo">
+                    <img src="@(sponsor.Image != null ? $"/Sponsors/{Model.Collection.Id}/{sponsor.Image}" : "/Content/images/doodles/3.png")" alt="Sponsor Logo" />
+                </div>
+                <hr />
+                @if (sponsor.Statement != null)
+                {
+                    <div class="sponsor-statement" role="textbox">
+                        @Html.Raw(System.Net.WebUtility.HtmlDecode(sponsor.Statement))
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</section>
+
+@if (Model.Collection.Id == 1 || Model.Collection.Id == 2)
+{
+    <footer class="disclaimer">
+        The images in this collection are used under the terms of the Canva Free Media License Agreement. <br />
+        <a href="https://www.canva.com">Canva</a> is a platform that offers a wide range of design resources, including free images for creative projects. <br /> <br />
+
+        We would like to express our gratitude to Canva and its contributors for providing these resources to the design community.
+    </footer>
+}

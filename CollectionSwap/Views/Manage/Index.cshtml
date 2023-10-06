@@ -1,0 +1,29 @@
+﻿@model CollectionSwap.Models.IndexViewModel
+@using CollectionSwap.Models
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Manage Your Account";
+}
+
+<div class="manage-container">
+    <div class="manage-container-nav">
+        <ul class="">
+            <li><a class="submit-button" href="/Manage/Find" data-nav="Find">Find Swaps</a></li>
+            <li><a href="/Manage/Swaps" data-nav="Swaps">Your Swaps</a></li>
+            <li><a href="/Manage/YourCollections" data-nav="YourCollections">Your Collections</a></li>
+            @if (User.IsInRole("Admin"))
+            {
+                <li><a href="/Manage/Collections" data-nav="Collections">Manage Collections</a></li>
+            }
+            <li><a href="/Manage/Account" data-nav="Account">Your Account</a></li>
+        </ul>
+    </div>
+    <div class="manage-container-main">
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/swap-ui.js"></script>
+    <script src="~/Scripts/main.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+}

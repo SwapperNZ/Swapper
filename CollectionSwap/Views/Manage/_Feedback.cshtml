@@ -1,0 +1,125 @@
+﻿@model CollectionSwap.Models.FeedbackViewModel
+@using CollectionSwap.Models
+@using Microsoft.AspNet.Identity
+@using Newtonsoft.Json
+@{
+    var userId = User.Identity.GetUserId();
+    var sender = Model.Swap.Sender;
+    var receiver = Model.Swap.Receiver;
+
+    var userComments = Model.Feedback != null ? JsonConvert.DeserializeObject<List<string>>(Model.Feedback.Comments) : null;
+
+    var isCharity = Model.Swap.ReceiverRequestedItems == "[]";
+    var hasPlacedFeedback = userId == sender.Id ? isCharity || Model.Swap.SenderFeedback != null : Model.Swap.ReceiverFeedback != null;
+    var hasSentItems = userId == sender.Id ? Model.Swap.SenderConfirmSent : Model.Swap.ReceiverConfirmSent;
+    var hasReceivedItems = userId == sender.Id ? Model.Swap.SenderConfirmReceived : Model.Swap.ReceiverConfirmReceived;
+
+    var heading = hasSentItems && hasReceivedItems && hasPlacedFeedback ? "Completed Swap" : "Swap Feedback";
+}
+
+<div class="feedback-module">
+    <div>
+        <span class="feedback-header">Rate your swap with @(userId == sender.Id ? receiver.UserName : sender.UserName)</span>
+        <div class="form-group">
+            <div class="star-rating-module">
+                @for (int i = 0; i < 5; i++)
+                {
+                    if (Model.Feedback != null)
+                    {
+                        if (5 - i <= Model.Feedback.Rating)
+                        {
+                            <button class="star-button selected"><i class="fa fa-star"></i></button>
+                        }
+                        else
+                        {
+                            <button class="star-button disabled"><i class="fa fa-star"></i></button>
+                        }
+                    }
+                    else
+                    {
+                        <button class="star-button"><i class="fa fa-star"></i></button>
+                    }
+                }
+            </div>
+            @Html.ValidationMessageFor(m => m.Feedback.Rating)
+        </div>
+    </div>
+
+    <div class="feedback-form-container">
+        <span class="feedback-header">Select any reasons for this rating that apply</span>
+        <div class="feedback-tabs">
+        </div>
+
+        @using (Html.BeginForm("PlaceFeedback", "Manage", FormMethod.Post, new { id = "feedback-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="feedback-options">
+                @{
+                    var positiveComments = Feedback.PositiveComments;
+                    var negativeComments = Feedback.NegativeComments;
+                }
+                <span class="feedback-header">Positive Feedback</span>
+                <ul class="feedback-list positive">
+                    @if (userComments != null)
+                    {
+                        foreach (var comment in positiveComments)
+                        {
+                            if (userComments.Contains(comment))
+                            {
+                                <li class="selected">@comment</li>
+                            }
+                            else
+                            {
+
+                                <li>@comment</li>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var comment in positiveComments)
+                        {
+                            <li>@comment</li>
+                        }
+                    }
+                </ul>
+
+                <span class="feedback-header">Negative Feedback</span>
+                <ul class="feedback-list negative">
+                    @if (userComments != null)
+                    {
+                        foreach (var comment in negativeComments)
+                        {
+                            if (userComments.Contains(comment))
+                            {
+                                <li class="selected">@comment</li>
+                            }
+                            else
+                            {
+
+                                <li>@comment</li>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var comment in negativeComments)
+                        {
+                            <li>@comment</li>
+                        }
+                    }
+                </ul>
+            </div>
+
+            if (Model.Feedback != null)
+            {
+                @Html.HiddenFor(m => m.Feedback.Id)
+            }
+            @Html.Hidden("Feedback.SwapId", Model.Swap.Id)
+            @Html.HiddenFor(m => m.Feedback.Rating)
+            @Html.HiddenFor(m => m.Feedback.Comments)
+        }
+    </div>
+</div>
+
+<button class="submit-button" onclick="$('#feedback-form').trigger('submit')">Submit Feedback</button>

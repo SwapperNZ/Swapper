@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string;
+}
+
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", }))
+    {
+        @Html.AntiForgeryToken()
+
+        <ul>
+            <li class="@(currentController == "Manage" ? "selected" : "")">
+                @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "SwapHistory", "Manage")
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        </ul>
+    }
+}
+else
+{
+    <ul>
+        <li>@Html.ActionLink("Login", "Login", "Account")</li>
+    </ul>
+}
