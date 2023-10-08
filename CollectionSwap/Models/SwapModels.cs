@@ -102,11 +102,11 @@ namespace CollectionSwap.Models
                                             .SelectMany((value, index) => Enumerable.Repeat(index, value))
                                             .ToList();
 
-                        this.Collection.Id = request.CollectionId;
-                        this.SenderCollection.Id = request.SenderUserCollectionId;
-                        this.ReceiverCollection.Id = request.ReceiverUserCollectionId;
-                        this.Sender.Id = request.ReceiverId;                                         // Sender and receiver are switched for donated items
-                        this.Receiver.Id = userId;
+                        this.Collection = db.Collections.Find(request.CollectionId);
+                        this.SenderCollection = db.UserCollections.Find(request.SenderUserCollectionId);
+                        this.ReceiverCollection = db.UserCollections.Find(request.ReceiverUserCollectionId);
+                        this.Sender = db.Users.Find(request.ReceiverId);                        // Sender and receiver are switched for donated items
+                        this.Receiver = db.Users.Find(userId);
                         this.SenderRequestedItems = JsonConvert.SerializeObject(senderItemCount);   // Snapshot of the items the sender has on offer 
                         this.ReceiverRequestedItems = JsonConvert.SerializeObject(new List<int>());
                         this.SwapSize = 0;
@@ -115,7 +115,6 @@ namespace CollectionSwap.Models
 
                         db.Swaps.Add(this);
                         break;
-
                     case "charity-confirmed":
                         var declinedSwaps = db.Swaps.Where(s => s.Id != this.Id && s.SenderCollection.Id == this.SenderCollection.Id && s.Status == "charity").ToList();
 
@@ -143,15 +142,14 @@ namespace CollectionSwap.Models
                         this.Status = request.Status;
                         db.Entry(this).State = EntityState.Modified;
 
-                        HoldItems(this.SenderRequestedItems, db.UserCollections.Find(this.SenderCollection.Id), this, db);
+                        HoldItems(this.SenderRequestedItems, this.SenderCollection, this, db);
                         break;
-
                     case "requested":
-                        this.Collection.Id = request.CollectionId;
-                        this.SenderCollection.Id = request.SenderUserCollectionId;
-                        this.ReceiverCollection.Id = request.ReceiverUserCollectionId;
-                        this.Sender.Id = userId;
-                        this.Receiver.Id = request.ReceiverId;
+                        this.Collection = db.Collections.Find(request.CollectionId);
+                        this.SenderCollection = db.UserCollections.Find(request.SenderUserCollectionId);
+                        this.ReceiverCollection = db.UserCollections.Find(request.ReceiverUserCollectionId);
+                        this.Sender = db.Users.Find(userId);
+                        this.Receiver = db.Users.Find(request.ReceiverId);
                         this.SenderRequestedItems = request.SenderItems;
                         this.ReceiverRequestedItems = request.RequestedItems;
                         this.SwapSize = request.SwapSize;
@@ -160,21 +158,19 @@ namespace CollectionSwap.Models
 
                         db.Swaps.Add(this);
                         break;
-
                     case "accepted":
                         this.SenderRequestedItems = request.SenderItems;
                         this.Status = request.Status;
                         db.Entry(this).State = EntityState.Modified;
 
-                        HoldItems(this.ReceiverRequestedItems, db.UserCollections.Find(this.ReceiverCollection.Id), this, db);
+                        HoldItems(this.ReceiverRequestedItems, this.ReceiverCollection, this, db);
                         break;
-
                     case "confirmed":
                         this.ReceiverRequestedItems = request.RequestedItems;
                         this.Status = request.Status;
                         db.Entry(this).State = EntityState.Modified;
 
-                        HoldItems(this.SenderRequestedItems, db.UserCollections.Find(this.SenderCollection.Id), this, db);
+                        HoldItems(this.SenderRequestedItems, this.SenderCollection, this, db);
                         break;
                     case "charity-canceled":
                     case "canceled":
@@ -195,7 +191,6 @@ namespace CollectionSwap.Models
                         this.Status = request.Status;
                         db.Entry(this).State = EntityState.Modified;
                         break;
-
                     case "charity-declined":
                     case "declined":
                         ReleaseItems(this, db);

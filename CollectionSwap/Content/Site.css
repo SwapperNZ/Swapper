@@ -309,15 +309,17 @@ h1, h2, h3, h4 {
     flex-direction: column;
     justify-content: flex-start;
     flex: 1;
+    gap: 4rem;
     width: 100%;
     font-family: 'Montserrat Alternates';
 }
 
-    #home-container > section:not(.add-sponsor) {
+    #home-container > section:first-child {
         display: flex;
         align-items: flex-end;
         gap: 12rem;
         min-width: 60rem;
+        padding-top: 3rem;
     }
 
         #home-container > section.add-sponsor {
@@ -329,6 +331,20 @@ h1, h2, h3, h4 {
             /*margin-top: 1rem;*/
         }
 
+    #home-container > section.disclaimer {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        max-width: 41rem;
+        padding: 0.75rem;
+        margin-inline: auto;
+        text-wrap: balance;
+        font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        font-size: 0.8rem;
+        background: #ffffffaa;
+        box-shadow: var(--container-box-shadow);
+    }
+
 .add-sponsor .sponsors {
     position: relative;
     display: flex;
@@ -336,7 +352,7 @@ h1, h2, h3, h4 {
     align-items: center;
     justify-content: center;
     padding: 1rem 5rem;
-    margin-top: 5rem;
+    /*margin-top: 5rem;*/
 }
 
 .add-sponsor.editing .sponsors::after {
@@ -460,14 +476,14 @@ h1, h2, h3, h4 {
             box-shadow: var(--container-box-shadow);
         }
 
-    #home-container .container-half {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        justify-content: flex-end;
-        height: 35rem;
-        flex: 1;
-    }
+#home-container .container-half {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    height: 33rem;
+    flex: 1;
+}
 
         #home-container .container-half:nth-child(2) {
             align-items: flex-start;
@@ -475,6 +491,7 @@ h1, h2, h3, h4 {
             margin-left: -5rem;
             background: url('images/doodles/5.png') no-repeat;
             background-position: top;
+            /*background-size: 26rem;*/
             background-size: contain;
         }
 
@@ -497,16 +514,31 @@ h1, h2, h3, h4 {
 
 #about-container {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     flex: 1;
     gap: 4rem;
     width: 100%;
-    padding-top: 6rem;
+    padding: 1rem;
     font-family: 'Montserrat Alternates';
-    /*background: red;*/
 }
+
+    #about-container .hero-message {
+        margin-bottom: 1rem;
+    }
+
+    #about-container > .column {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding-top: 4rem
+    }
+
+    #about-container > .column > div {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+    }
 
 body.support-bg-split {
     --_color: #a3c6ce;
@@ -777,16 +809,19 @@ section.showcase div:first-child::after {
 }
 
 
-#about-container p {
+#about-container section {
     width: 40rem;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
 
 section.mugshots {
     display: flex;
     flex-direction: column;
+    gap: 3rem 0;
+    flex-wrap: wrap;
     width: 40rem;
     height: 46rem;
-    flex-wrap: wrap;
+    padding-top: 3rem;
     background: none;
 }
 
@@ -796,10 +831,21 @@ section.mugshots img {
     object-fit: contain;
 }
 
+    section.mugshots div > img {
+        margin: 1.5rem 0 1.25rem;
+    }
+
+    section.mugshots div > span {
+        width: 83%;
+        line-height: 1.2rem;
+        white-space: nowrap;
+    }
+
     section.mugshots div:nth-child(1) {
         position: relative;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         width: 281px;
         height: 300px;
         margin-top: 50%;
@@ -817,7 +863,8 @@ section.mugshots img {
     section.mugshots div:nth-child(2) {
         position: relative;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         width: 281px;
         height: 340px;
         background-image: url("data:image/svg+xml,%3Csvg width='281' height='387' viewBox='0 0 281 387' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.9354 332.781L13.9992 18.4546C14.0003 17.7101 14.117 17.0003 14.3241 16.4779C14.5313 15.9556 14.8124 15.6622 15.107 15.661C15.3431 15.6561 15.5718 15.8848 15.7443 16.2984C15.9168 16.7119 16.0193 17.2774 16.03 17.8739L20.9498 333.792C20.9559 334.202 20.9294 334.611 20.8719 334.993C20.8143 335.375 20.7269 335.723 20.6149 336.016C20.5028 336.31 20.3683 336.542 20.2193 336.701C20.0703 336.86 19.9098 336.941 19.7473 336.94L14.5863 336.963C14.3697 336.968 14.1544 336.863 13.9531 336.654C13.7518 336.444 13.5687 336.135 13.4147 335.745C13.2606 335.355 13.1388 334.892 13.0565 334.382C12.9742 333.873 12.933 333.329 12.9354 332.781Z' fill='%23231F20'/%3E%3Cpath d='M269.627 20.5104C183.981 21.9961 99.4792 22.8823 16.1217 23.1688C5.12346 23.1963 14.3455 19.8028 25.3424 19.7628C107.142 19.4721 190.138 18.5985 274.33 17.142C285.611 16.9305 281.058 20.2997 269.627 20.5104Z' fill='%23231F20'/%3E%3Cpath d='M269.143 19.4203L265.932 333.736C265.926 334.481 265.805 335.19 265.594 335.711C265.383 336.232 265.1 336.524 264.805 336.524C264.569 336.528 264.342 336.298 264.173 335.883C264.003 335.469 263.904 334.903 263.898 334.306L261.135 18.3685C261.132 17.958 261.161 17.5498 261.221 17.1681C261.281 16.7864 261.371 16.4388 261.485 16.146C261.599 15.8532 261.735 15.621 261.886 15.4632C262.036 15.3054 262.197 15.2251 262.359 15.2271L267.52 15.2299C267.737 15.2262 267.951 15.3327 268.151 15.543C268.351 15.7533 268.532 16.0632 268.684 16.4542C268.835 16.8452 268.954 17.3092 269.032 17.8188C269.111 18.3284 269.149 18.873 269.143 19.4203Z' fill='%23231F20'/%3E%3Cpath d='M278.816 319.75C278.769 319.794 278.702 319.839 278.62 319.882C278.539 319.925 278.443 319.965 278.34 320C278.236 320.034 278.127 320.063 278.019 320.084C277.91 320.104 277.805 320.117 277.709 320.121C185.666 323.852 88.6626 330.602 0.599385 330.01C0.382625 330.003 0.230356 329.957 0.170973 329.88C0.11159 329.802 0.149134 329.699 0.276609 329.589C0.457197 329.422 0.771175 329.255 1.15407 329.121C1.53697 328.987 1.95976 328.897 2.33551 328.87C96.7904 321.81 187.381 321.85 278.222 319.098C278.591 319.096 278.857 319.163 278.968 319.284C279.078 319.405 279.024 319.572 278.816 319.75Z' fill='%23231F20'/%3E%3C/svg%3E%0A");
@@ -830,13 +877,22 @@ section.mugshots img {
             right: -30px;
         }
 
+        section.mugshots div:nth-child(2) > img {
+            margin: 2.2rem 0 1.5rem;
+        }
+
     section.mugshots div:nth-child(3) {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
         width: 283px;
         height: 295px;
         background-image: url("data:image/svg+xml,%3Csvg width='283' height='331' viewBox='0 0 283 331' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14.6056 46.2762L14.1609 312.935C14.1584 313.567 14.2717 314.17 14.4763 314.614C14.6809 315.058 14.9606 315.309 15.2552 315.311C15.4913 315.317 15.7211 315.124 15.8956 314.774C16.0701 314.425 16.1753 313.945 16.1889 313.439L22.6246 45.4643C22.6327 45.1161 22.6082 44.7695 22.5525 44.4451C22.4968 44.1207 22.4111 43.825 22.3004 43.5755C22.1897 43.326 22.0564 43.1276 21.9081 42.9923C21.7599 42.8569 21.5998 42.7872 21.4373 42.7872L16.2765 42.7379C16.0599 42.7325 15.8441 42.8207 15.6418 42.9971C15.4395 43.1735 15.2549 43.4345 15.099 43.7647C14.9431 44.0948 14.8191 44.4873 14.7343 44.9188C14.6495 45.3502 14.6058 45.8119 14.6056 46.2762Z' fill='%23231F20'/%3E%3Cpath d='M269.794 312.637C184.157 310.893 99.6608 309.663 16.306 308.948C5.30809 308.863 14.5137 311.794 25.5102 311.89C107.307 312.599 190.298 313.81 274.482 315.522C285.761 315.765 281.225 312.881 269.794 312.637Z' fill='%23231F20'/%3E%3Cpath d='M269.305 313.559L267.603 46.8975C267.6 46.2659 267.482 45.6636 267.274 45.2202C267.066 44.7768 266.784 44.5275 266.489 44.5261C266.253 44.5217 266.025 44.7154 265.853 45.066C265.682 45.4166 265.58 45.8963 265.571 46.4023L261.292 314.406C261.287 314.755 261.314 315.101 261.373 315.425C261.431 315.749 261.519 316.045 261.632 316.294C261.744 316.543 261.879 316.741 262.029 316.875C262.178 317.01 262.339 317.079 262.501 317.078L267.662 317.105C267.879 317.109 268.094 317.02 268.295 316.843C268.496 316.666 268.678 316.404 268.831 316.073C268.985 315.742 269.106 315.349 269.187 314.917C269.268 314.486 269.308 314.024 269.305 313.559Z' fill='%23231F20'/%3E%3Cpath d='M280.419 58.8356C280.372 58.7977 280.306 58.7591 280.224 58.7222C280.143 58.6853 280.047 58.6509 279.944 58.6209C279.841 58.591 279.732 58.5661 279.624 58.5478C279.515 58.5296 279.41 58.5183 279.313 58.5146C187.29 54.8289 90.3208 48.5533 2.25612 48.5576C2.03933 48.562 1.88684 48.6004 1.82708 48.6658C1.76733 48.7311 1.80438 48.8189 1.93133 48.9128C2.11111 49.0554 2.42428 49.1993 2.80653 49.3149C3.18878 49.4306 3.61113 49.5092 3.98674 49.5346C98.4062 56.0577 188.996 56.5369 279.822 59.3849C280.191 59.3885 280.458 59.3336 280.569 59.2315C280.68 59.1294 280.626 58.9878 280.419 58.8356Z' fill='%23231F20'/%3E%3C/svg%3E%0A");
         background-position: bottom;
+    }
+
+    section.mugshots div:nth-child(3) > img {
+        margin: 2.2rem 0 1rem;
     }
 
 .hero-message {
@@ -3726,6 +3782,16 @@ input[type=number] {
         background: #f3f2ed;
     }
 
+#profile-container .feedback .profile {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+    #profile-container .feedback .profile > :last-child {
+        color: #aaa;
+    }
+
 .feedback-bar-chart .header i {
     font-size: 1.5rem;
     color: var(--brand-gold);
@@ -3911,19 +3977,19 @@ footer.disclaimer {
 
 .screen-incompatible {
     display: none;
-    padding: 5rem 1rem 1rem 1rem;
-    /*margin-top: 5rem;*/
+    width: 40rem;
+    margin-top: 5rem
 }
 
 .screen-incompatible > img {
-    width: 10rem;
+    width: 60%;
     height: auto;
     object-fit: contain;
 }
 
 @media (max-width: 1439px) {
     body {
-        align-items: center;
+        align-items: flex-start;
     }
     body > *:not(.screen-incompatible) {
         display: none;
@@ -3931,7 +3997,9 @@ footer.disclaimer {
 
     .screen-incompatible {
         display: flex;
-        align-items: flex-end;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
     }
 }
 

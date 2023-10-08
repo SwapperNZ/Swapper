@@ -360,7 +360,7 @@ namespace CollectionSwap.Controllers
             model.Collections = db.Collections.ToList();
 
             partial = Helper.RenderViewToString(ControllerContext, "_ManageCollections", model, true);
-            return Json(new { PartialView = partial, RefreshTargets = new { first = "#manage-collections-container" } });
+            return Json(new { PartialView = partial, RefreshTargets = new { first = "#manage-collections-container" }, FormResetTarget = "#create-collection-form" });
         }
 
         //

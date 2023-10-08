@@ -128,7 +128,7 @@ namespace CollectionSwap.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("LoginError", "Invalid login attempt.");
+                    ModelState.AddModelError("LoginViewModel.Password", "Invalid login attempt.");
                     return View(avModel);
             }
         }
